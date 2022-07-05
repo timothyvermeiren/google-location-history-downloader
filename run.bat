@@ -1,0 +1,1 @@
+C:\development\google-location-history-downloader\.venv\Scripts\python.exe C:\development\google-location-history-downloader\main.py --destination "kml" --destination-path "C:\development\google-location-history-downloader\data" --mode "yesterday" --config-file "C:\development\google-location-history-downloader\config\config.ini"
