@@ -17,8 +17,11 @@ python -m pipwin install shapely
 python -m pipwin install gdal
 python -m pipwin install fiona
 python -m pipwin install pyproj
-python -m pipwin install six
+<!-- python -m pipwin install six -->
 python -m pipwin install rtree
-python -m pipwin install geopandas
+python -m pip install geopandas
+
+And then it's easier to go for the rest:
+python -m pip install -r requirements.txt
 
 From: https://stackoverflow.com/questions/54734667/error-installing-geopandas-a-gdal-api-version-must-be-specified-in-anaconda

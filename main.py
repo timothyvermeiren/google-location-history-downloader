@@ -3,7 +3,7 @@ import requests # For... yeah.
 import configparser
 import logging
 import logging.handlers # For RotatingFileHandler
-import os, sys, datetime, time
+import os, sys, datetime, time, platform
 import keyring
 import browser_cookie3
 import geopandas as gpd 
@@ -22,7 +22,7 @@ start_datetime = datetime.datetime.utcnow()
 
 ##### Logging
 logger = logging.getLogger() # Root logger
-log_file_name = "logs" + os.sep + "tableau_git_sync.log"
+log_file_name = "logs" + os.sep + "google_location_history_downloader.log"
 log_file_handler = logging.handlers.RotatingFileHandler(log_file_name, maxBytes=5000000, backupCount=5)
 log_console_handler = logging.StreamHandler(sys.stdout)
 log_formatter = logging.Formatter("%(asctime)s [%(threadName)s] [%(levelname)s]  %(message)s")
@@ -71,6 +71,13 @@ else:
 logger.info(f"Mode: { args.mode }")
 logger.info(f"Date range: { start_date } - { end_date }")
 
+# We need to omit the leading 0 for the day in the date format string later on, otherwise Google does not "understand" the request. For some reason, there is no cross-platform format string for this, but we need to fiddle.
+logger.info(f"Running on platform: { platform.system() }. Using the appropriate date format string.")
+if platform.system() == "Windows":
+    date_day_format_string = "%#d"
+else:
+    date_day_format_string = "%-d"
+
 # Process config.ini second
 if args.config_file is None:
     args.config_file = "config" + os.sep + "config.ini"
@@ -108,7 +115,7 @@ gl_url_base = f"https://www.google.com/maps/timeline/kml?authuser={ args.authuse
 # Iterdate
 dates_range = [start_date + datetime.timedelta(days=x) for x in range((end_date-start_date).days + 1)]
 for date in dates_range:
-    date_for_request = datetime.date.strftime(date, "%Y") + "!2i" + str(date.month - 1) + "!3i" + datetime.date.strftime(date, "%d")
+    date_for_request = datetime.date.strftime(date, "%Y") + "!2i" + str(date.month - 1) + "!3i" + datetime.date.strftime(date, date_day_format_string)
     gl_url_full = f"{gl_url_base}{ date_for_request }!2m3!1i{ date_for_request }"
     logger.info(f"Getting location info for { date }: { gl_url_full }")
     # Get KML
